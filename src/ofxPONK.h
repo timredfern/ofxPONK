@@ -3,6 +3,11 @@
 // 
 //
 //  Created by Tim Redfern March 2023
+//
+//  PONK (Pathes Over NetworK) is a minimal protocol to transfer 2D colored pathes from a source to
+//  a receiver. It has been developped to transfer laser path from a software to another over network using UDP.
+//
+//  https://github.com/madmappersoftware/Ponk
 //                    
 
 #pragma once
