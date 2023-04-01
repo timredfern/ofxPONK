@@ -58,24 +58,36 @@ int ofxPONKsender::draw(colourPolyline &line, int intensity){
 int ofxPONKsender::draw(vector <colourPolyline> &lines, int intensity){
     //todo: move to a thread
     //todo: add a transform
+    ofPoint output_centre(0,0);
+
+
+    int xoffs=output_centre.x-(ofGetWidth()/2);
+    int yoffs=output_centre.y-(ofGetHeight()/2);
+    float normalised_scale=1.0f/ofGetHeight();
 
     std::vector<unsigned char> fullData;
     fullData.reserve(65536);
 
-    fullData.push_back(PONK_DATA_FORMAT_XY_F32_RGB_U8); 
+    
 
-    pushMetaData(fullData,"MAXSPEED",1.0f); //can this go BEFORE pathnumb? 
+    
 
     int points=0;
 
     float j=0.0f;
     for (auto& line:lines){
         j+=1.0f;
+
+        fullData.push_back(PONK_DATA_FORMAT_XY_F32_RGB_U8); 
+        fullData.push_back(2); //at any time?
         pushMetaData(fullData,"PATHNUMB",j);
-        for (int i=0;i<line.size()-1;i++){
-            push32bits(fullData,line[i].x);
+        pushMetaData(fullData,"MAXSPEED",1.0f); //can this go BEFORE pathnumb?        
+        push16bits(fullData,line.size());
+        
+        for (int i=0;i<line.size();i++){
+            push32bits(fullData,(line[i].x+xoffs)*normalised_scale);
             // Push Y - LSB first
-            push32bits(fullData,line[i].y);
+            push32bits(fullData,(line[i].y+yoffs)*normalised_scale);
             // Push R - LSB first
             push8bits(fullData,line.getColourAt(i).r);
             // Push G - LSB first
@@ -138,11 +150,12 @@ int ofxPONKsender::draw(vector <colourPolyline> &lines, int intensity){
         chunkNumber++;
     }
 
+    //ofLog()<<"wrote "<<chunkNumber<<" chunks, total bytes "<<written;
+
     return points;
     /*
 
-    int xoffs=output_centre.x-(ofGetWidth()/2);
-    int yoffs=output_centre.y-(ofGetHeight()/2);
+    
 
     if (device!=OFXHELIOS_NODEVICE){
         while (!dac.GetStatus(device)); //timeout for this?
