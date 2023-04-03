@@ -1,7 +1,8 @@
 #include "ofApp.h"
 
-#define NUM_POINTS 1000
-#define CIRCLE_RADIUS 300
+#define NUM_POINTS 100
+#define CIRCLE_RADIUS 800
+#define CIRCLE_SPACING 300
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -39,6 +40,10 @@ void testApp::draw(){
 
     The aim is to be able to preview in any size window
 
+    1. how hard is it to make/ storr mapping
+    2. what do we want to do with it
+    3. hw to make M divide drawing amongst lasers
+
 
     todraw.draw();
     */
@@ -49,17 +54,19 @@ void testApp::draw(){
 
     for (int j=0;j<4;j++){
 
+        float circle_radius=sin((ofGetElapsedTimef()+(j*PI))*.1)*CIRCLE_RADIUS;
+
         ofPoint centre(
-            (ofGetWidth()/2)+(cos(ofGetElapsedTimef()+j)*200),
-            (ofGetHeight()/2)+(sin(ofGetElapsedTimef()+j)*200)
+            (ofGetWidth()/2)+(cos(ofGetElapsedTimef()+(j*PI*0.5))*CIRCLE_SPACING),
+            (ofGetHeight()/2)+(sin(ofGetElapsedTimef()+(j*PI*0.5))*CIRCLE_SPACING)
             );
 
         colourPolyline line;
 
-        for (int i=0;i<NUM_POINTS+1;i++){
+        for (int i=0;i<=NUM_POINTS;i++){
                 line.addVertex(
-                    ((cos(float(i)*pfactor)+1)*CIRCLE_RADIUS)+centre.x,
-                    ((sin(float(i)*pfactor)+1)*CIRCLE_RADIUS)+centre.y,
+                    (cos(float(i)*pfactor)*circle_radius)+centre.x,
+                    (sin(float(i)*pfactor)*circle_radius)+centre.y,
                     (sin(float(i+(ofGetElapsedTimef()*30*j))*pfactor)+1)*128,
                     (sin(float(i+(ofGetElapsedTimef()*57*j))*pfactor)+1)*128,
                     (sin(float(i+(ofGetElapsedTimef()*101*(j)))*pfactor)+1)*128
