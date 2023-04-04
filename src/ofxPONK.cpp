@@ -6,7 +6,6 @@
 //
 
 #include "ofxPONK.h"
-#include "PONKdefs.h"
 
 void push8bits(std::vector<unsigned char>& fullData, unsigned char value) {
     fullData.push_back(value);
@@ -35,7 +34,53 @@ void pushMetaData(std::vector<unsigned char>& fullData, const char (&eightCC)[9]
     push32bits(fullData,*(int*)&value);
 }
 
-int ofxPONKsender::draw(vector <ofPolyline> &lines,ofColor colour,int intensity){
+#include <arpa/inet.h> // inet_ntop & inet_pton
+#include <string.h> // strerror_r
+#include <arpa/inet.h> // ntohl & htonl
+
+
+string ipv4_int_to_string(uint32_t in, bool *const success)
+{
+    string ret(INET_ADDRSTRLEN, '\0');
+    in = htonl(in);
+    const bool _success = (NULL != inet_ntop(AF_INET, &in, &ret[0], ret.size()));
+    if (success)
+    {
+        *success = _success;
+    }
+    if (_success)
+    {
+        ret.pop_back(); // remove null-terminator required by inet_ntop
+    }
+    else if (!success)
+    {
+        char buf[200] = {0};
+        strerror_r(errno, buf, sizeof(buf));
+        throw std::runtime_error(string("error converting ipv4 int to string ") + to_string(errno) + string(": ") + string(buf));
+    }
+    return ret;
+}
+// return is native-endian
+// when an error occurs: if success ptr is given, it's set to false, otherwise a std::runtime_error is thrown.
+uint32_t ipv4_string_to_int(const string &in, bool *const success)
+{
+    uint32_t ret;
+    const bool _success = (1 == inet_pton(AF_INET, in.c_str(), &ret));
+    ret = ntohl(ret);
+    if (success)
+    {
+        *success = _success;
+    }
+    else if (!_success)
+    {
+        char buf[200] = {0};
+        strerror_r(errno, buf, sizeof(buf));
+        throw std::runtime_error(string("error converting ipv4 string to int ") + to_string(errno) + string(": ") + string(buf));
+    }
+    return ret;
+}
+
+int ofxPONKSender::draw(vector <ofPolyline> &lines,ofColor colour,int intensity){
     vector <colourPolyline> output;
     for (auto& line:lines){
         output.push_back(colourPolyline(line,colour));
@@ -43,19 +88,19 @@ int ofxPONKsender::draw(vector <ofPolyline> &lines,ofColor colour,int intensity)
     return draw(output,intensity);
 }
 
-int ofxPONKsender::draw(ofPolyline &line,ofColor colour,int intensity){
+int ofxPONKSender::draw(ofPolyline &line,ofColor colour,int intensity){
     colourPolyline col=colourPolyline(line,colour);
     return draw(col,intensity);
 
 }
 
-int ofxPONKsender::draw(colourPolyline &line, int intensity){
+int ofxPONKSender::draw(colourPolyline &line, int intensity){
     vector <colourPolyline> lines;
     lines.push_back(line);
     return draw(lines,intensity);
 }
 
-int ofxPONKsender::draw(vector <colourPolyline> &lines, int intensity){
+int ofxPONKSender::draw(vector <colourPolyline> &lines, int intensity){
     //todo: move to a thread
     //todo: add a transform
     ofPoint output_centre(0,0);
@@ -139,13 +184,7 @@ int ofxPONKsender::draw(vector <colourPolyline> &lines, int intensity){
         memcpy(&packet[sizeof(GeomUdpHeader)],&fullData[written],dataBytesForThisChunk);
         written += dataBytesForThisChunk;
 
-        // Now send chunk packet
-        GenericAddr destAddr;
-        destAddr.family = AF_INET;
-        // Unicast on localhost 127.0.0.1
-        destAddr.ip = ((127 << 24) + (0 << 16) + (0 << 8) + 1);
-        destAddr.port = PONK_PORT;
-        socket.sendTo(destAddr, &packet.front(), static_cast<unsigned int>(packet.size()));
+        socket.sendTo(dest, &packet.front(), static_cast<unsigned int>(packet.size()));
 
         chunkNumber++;
     }

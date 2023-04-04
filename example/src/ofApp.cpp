@@ -7,6 +7,8 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 
+    laser.setup();
+
 }
 
 //--------------------------------------------------------------
@@ -85,7 +87,7 @@ void testApp::draw(){
         ofSetWindowTitle("laser error ");
     }
 
-    
+    laser.panel.draw();
 
 }
 
