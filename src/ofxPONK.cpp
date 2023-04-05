@@ -101,6 +101,9 @@ int ofxPONKSender::draw(colourPolyline &line, int intensity){
 }
 
 int ofxPONKSender::draw(vector <colourPolyline> &lines, int intensity){
+    
+    if(!enabled) return -1;
+
     //todo: move to a thread
     //todo: add a transform
     ofPoint output_centre(0,0);
@@ -112,10 +115,6 @@ int ofxPONKSender::draw(vector <colourPolyline> &lines, int intensity){
 
     std::vector<unsigned char> fullData;
     fullData.reserve(65536);
-
-    
-
-    
 
     int points=0;
 

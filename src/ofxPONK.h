@@ -32,14 +32,14 @@ public:
         dest.family=AF_INET;
         dest.ip=ip;
         dest.port=port;
-
+        enabled=true;
         ofLog()<<"PONKSender "<<ipv4_int_to_string(ip)<<":"<<ofToString(port);   
     }
 
     ~ofxPONKSender(){
         //delete socket;
     }
-
+    ofParameter<bool> enabled;
     int draw(colourPolyline &line, int intensity=255);
     int draw(ofPolyline &line,ofColor colour=ofColor(255,255,255),int intensity=255);
     int draw(vector <ofPolyline> &lines,ofColor colour=ofColor(255,255,255),int intensity=255);
@@ -76,10 +76,10 @@ public:
         ip.addListener(this,&ofxPONKSenderPanel::ipChanged);
         port.addListener(this,&ofxPONKSenderPanel::portChanged);
         panel.setup("PONK sender","",10,10); //TODO save pos
+        panel.add(enabled.set("enable",true));
         panel.add(ip.set("ip",ipv4_int_to_string(dest.ip)));
         panel.add(port.set("port",ofToString(dest.port)));
     }
-
     ofParameter<string> ip;
     ofParameter<string> port;
     ofxPanel panel;

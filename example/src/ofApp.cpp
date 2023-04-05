@@ -7,7 +7,7 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 
-    laser.setup();
+        laser.setup();
 
 }
 
@@ -83,8 +83,11 @@ void testApp::draw(){
     if (num>0){
         ofSetWindowTitle(ofToString(ofGetFrameRate(), 2)+" fps laser points: "+ofToString(num));
     }
+    else if (num==-1){
+        ofSetWindowTitle("laser disabled");
+    }
     else {
-        ofSetWindowTitle("laser error ");
+        ofSetWindowTitle("laser error");
     }
 
     laser.panel.draw();
