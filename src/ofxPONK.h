@@ -18,6 +18,8 @@
 #include "PonkDefs.h"
 #include "DatagramSocket.h"
 
+#include "ofxHelios.h"
+
 string ipv4_int_to_string(uint32_t in, bool *const success=nullptr);
 uint32_t ipv4_string_to_int(const string &in, bool *const success=nullptr);
 
@@ -72,10 +74,10 @@ public:
             port=ofToString(dest.port);
         }
     }
-    void setup(){
+    void setup(string name="PONK sender",int x=10,int y=10){
         ip.addListener(this,&ofxPONKSenderPanel::ipChanged);
         port.addListener(this,&ofxPONKSenderPanel::portChanged);
-        panel.setup("PONK sender","",10,10); //TODO save pos
+        panel.setup(name,"",x,y); //TODO save pos
         panel.add(enabled.set("enable",true));
         panel.add(ip.set("ip",ipv4_int_to_string(dest.ip)));
         panel.add(port.set("port",ofToString(dest.port)));
