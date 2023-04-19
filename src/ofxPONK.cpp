@@ -137,7 +137,7 @@ int ofxPONKSender::drawNormalised(vector <colourPolyline> &lines, int intensity,
         for (int i=0;i<line.size();i++){
             push32bits(fullData,(line[i].x+x)*scale);
             // Push Y - LSB first
-            push32bits(fullData,(line[i].y+y)*scale);
+            push32bits(fullData,(line[i].y+y)*scale*-1.0f);
             // Push R - LSB first
             push8bits(fullData,line.getColourAt(i).r);
             // Push G - LSB first
