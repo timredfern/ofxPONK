@@ -46,6 +46,7 @@ public:
     int draw(ofPolyline &line,ofColor colour=ofColor(255,255,255),int intensity=255);
     int draw(vector <ofPolyline> &lines,ofColor colour=ofColor(255,255,255),int intensity=255);
     int draw(vector <colourPolyline> &lines, int intensity=255);
+    int drawNormalised(vector <colourPolyline> &lines, int intensity=255,float x=0.0f,float y=0.0f, float scale=1.0f);
 };
 
 class ofxPONKSenderPanel: public ofxPONKSender{

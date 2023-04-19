@@ -113,6 +113,12 @@ int ofxPONKSender::draw(vector <colourPolyline> &lines, int intensity){
     int yoffs=output_centre.y-(ofGetHeight()/2);
     float normalised_scale=1.0f/ofGetHeight();
 
+    return drawNormalised(lines,intensity,xoffs,yoffs,normalised_scale);
+}
+
+
+int ofxPONKSender::drawNormalised(vector <colourPolyline> &lines, int intensity,float x,float y,float scale){
+
     std::vector<unsigned char> fullData;
     fullData.reserve(65536);
 
@@ -129,9 +135,9 @@ int ofxPONKSender::draw(vector <colourPolyline> &lines, int intensity){
         push16bits(fullData,line.size());
         
         for (int i=0;i<line.size();i++){
-            push32bits(fullData,(line[i].x+xoffs)*normalised_scale);
+            push32bits(fullData,(line[i].x+x)*scale);
             // Push Y - LSB first
-            push32bits(fullData,(line[i].y+yoffs)*normalised_scale);
+            push32bits(fullData,(line[i].y+y)*scale);
             // Push R - LSB first
             push8bits(fullData,line.getColourAt(i).r);
             // Push G - LSB first
